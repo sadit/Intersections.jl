@@ -4,6 +4,6 @@ module Intersections
 
 include("search.jl")
 include("by.jl")
+include("merge.jl")
 include("svs.jl")
-
 end

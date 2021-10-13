@@ -2,12 +2,12 @@
 export baezayates
 
 """
-    baezayates(A, B; output=Vector{eltype(A)}(undef, 0), findpos=binarysearch)
+    baezayates(A, B, output=eltype(A)[], findpos=binarysearch)
 
 Computes the intersection between first and second ordered lists using the Baeza-Yates algorithm [cite].
 The intersection is stored in `output`.
 """
-function baezayates(A, B, output, findpos)
+function baezayates(A, B, output=eltype(A)[], findpos=binarysearch)
     m = length(A)
     n = length(B)
     if m == 0 || n == 0
@@ -37,5 +37,3 @@ function baezayates(A, B, output, findpos)
 
     output
 end
-
-baezayates(A, B; output=Vector{eltype(A)}(undef, 0), findpos=binarysearch) = baezayates(A, B, output, binarysearch)

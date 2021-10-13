@@ -2,20 +2,22 @@
 export svs
 
 """
-    svs(postinglists)
+    svs(postinglists, intersect2=baezayates)
 
-Computes the intersection of the ordered lists in `postinglists`
+Computes the intersection of the ordered lists in `postinglists` using a
+small vs small strategy. Accepts an intersection algorithm of two sets.
 """
-function svs(postinglists)
-    sort!(postinglists, by=p->length(p), rev=true)
-    curr = baezayates(pop!(postinglists), pop!(postinglists))
+
+function svs(postinglists, intersect2=baezayates)
+    sort!(postinglists, by=length, rev=true)
+    curr = intersect2(pop!(postinglists), pop!(postinglists))
 
     if length(postinglists) > 0
         let prev = similar(curr)
 
             while length(postinglists) > 0
                 empty!(prev)
-                prev, curr = curr, baezayates(curr, pop!(postinglists); output=prev)
+                prev, curr = curr, intersect2(curr, pop!(postinglists), prev)
             end
         end
     end

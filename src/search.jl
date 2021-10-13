@@ -20,20 +20,19 @@ function binarysearch(A, x, sp=1, ep=length(A))
 end
 
 """
-	doublingsearch(A, x, sp=1)
+	doublingsearch(A, x, sp=1, ep=length(A))
 
 Finds the insertion position of `x` in `A`, starting at `sp`
 """
-function doublingsearch(A, x, sp=1)
-    n = length(A)
+function doublingsearch(A, x, sp=1, ep=length(A))
 	p = 0
     i = 1
 
-    @inbounds while sp+i <= n && A[sp+i] < x
+    @inbounds while sp+i <= ep && A[sp+i] < x
 		p = i
 		i += i
     end
 
-    binarysearch(A, x, sp + p, min(n, sp+i))
+    binarysearch(A, x, sp + p, min(ep, sp+i))
 end
 
