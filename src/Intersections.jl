@@ -5,7 +5,7 @@ module Intersections
 include("search.jl")
 include("by.jl")
 include("merge.jl")
-include("bk.jl")
+include("imerge.jl")
 include("svs.jl")
 include("bk.jl")
 end
