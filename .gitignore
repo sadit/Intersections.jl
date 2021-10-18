@@ -1,1 +1,10 @@
-
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+*~
+.vscode*
+.git*
+.ipynb*
+emotions.csv
+Manifest.toml
+docs/build/*

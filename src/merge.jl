@@ -1,6 +1,11 @@
 # This file is part of Intersections.jl
 export umerge
 
+"""
+    _remove_empty!(P, L)
+
+Inplace removal of empty lists
+"""
 function _remove_empty!(P, L)
     j = 1
     n = length(P)
@@ -21,13 +26,19 @@ function _remove_empty!(P, L)
     end
 end
 
+
+"""
+    _sort!(P, L)
+
+Adaptive bubble sort, efficient than other approaches because we expect a few sets and almost sorted
+"""
 function _sort!(P, L)
     s = 1
     n = length(P)
     while s > 0
         s = 0
         for i in 1:n-1
-            if L[i][P[i]] > L[i+1][P[i+1]]
+            @inbounds if L[i][P[i]] > L[i+1][P[i+1]]
                 P[i], P[i+1] = P[i+1], P[i]
                 L[i], L[i+1] = L[i+1], L[i]
                 s += 1
@@ -36,10 +47,14 @@ function _sort!(P, L)
     end
 end
 
+"""
+    umerge(L, output=eltype(L[1])[])
+
+Merges posting lists in `L` and saves the union in `output`
+"""
 function umerge(L, output=eltype(L[1])[])
     sort!(L, by=first)
     P = ones(Int, length(L))
-
     while true
         _remove_empty!(P, L)
         n = length(P)
