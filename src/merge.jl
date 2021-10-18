@@ -32,19 +32,26 @@ end
 
 Adaptive bubble sort, efficient than other approaches because we expect a few sets and almost sorted
 """
-function _sort!(P, L)
+function _sort!(P::Vector{IType}, L) where {IType<:Integer}
     s = 1
     n = length(P)
+    # @info "_sort!"
     while s > 0
         s = 0
         for i in 1:n-1
             @inbounds if L[i][P[i]] > L[i+1][P[i+1]]
-                P[i], P[i+1] = P[i+1], P[i]
-                L[i], L[i+1] = L[i+1], L[i]
+                _swap_items(P, i, i+1)
+                _swap_items(L, i, i+1)
                 s += 1
             end
         end
     end
+end
+
+function _swap_items(arr::T, i, j) where T
+    tmp = arr[i]
+    arr[i] = arr[j]
+    arr[j] = tmp
 end
 
 """
