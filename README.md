@@ -7,5 +7,6 @@ It implements some intersection algorithms for sorted lists of integers.
 
 
 # Usage
-You can found Pluto notebooks for examples and benchmarking in the [examples](https://  github.com/sadit/Intersections.jl/tree/main/examples) directory.
+You can found Pluto notebooks for examples and benchmarking in the
+[examples](https://github.com/sadit/Intersections.jl/tree/main/examples) directory.
 
