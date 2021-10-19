@@ -5,7 +5,7 @@ Random.seed!(0)
 
 @testset "SVS" begin
     @test [1, 3, 5] == svs([[1, 2, 3, 4, 5], [1, 3, 5]])
-
+    
     for ialgo2 in [baezayates, imerge2]
         n = 300
         for i in 1:n

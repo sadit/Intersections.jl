@@ -7,9 +7,9 @@ function imerge2(A, B, output=eltype(A)[])
     n, m = length(A), length(B)
 
     @inbounds while i <= n && j <= m
-        c = cmp(A[i], B[j])
+        c = cmp(_get_key(A, i), _get_key(B, j))
         if c == 0
-            push!(output, A[i])
+            push!(output, _get_key(A, i))
             i += 1
             j += 1
         elseif c < 0

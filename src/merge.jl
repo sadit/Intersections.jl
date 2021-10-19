@@ -26,7 +26,6 @@ function _remove_empty!(P, L)
     end
 end
 
-
 """
     _sort!(P, L)
 
@@ -35,24 +34,19 @@ Adaptive bubble sort, efficient than other approaches because we expect a few se
 function _sort!(P::Vector{IType}, L) where {IType<:Integer}
     s = 1
     n = length(P)
-    # @info "_sort!"
+    
     while s > 0
         s = 0
         for i in 1:n-1
-            @inbounds if L[i][P[i]] > L[i+1][P[i+1]]
-                _swap_items(P, i, i+1)
-                _swap_items(L, i, i+1)
+            @inbounds if _get_key(L[i], P[i]) > _get_key(L[i+1], P[i+1])
+                _swap_items!(P, i, i+1)
+                _swap_items!(L, i, i+1)
                 s += 1
             end
         end
     end
 end
 
-function _swap_items(arr::T, i, j) where T
-    tmp = arr[i]
-    arr[i] = arr[j]
-    arr[j] = tmp
-end
 
 """
     umerge(L, output=eltype(L[1])[])
@@ -67,13 +61,13 @@ function umerge(L, output=eltype(L[1])[])
         n = length(P)
         n == 0 && break
         n > 1 && _sort!(P, L)
-        # @info [L[i][P[i]] for i in eachindex(P)]        
-        val = L[1][P[1]]
+        # @info [L[i][P[i]] for i in eachindex(P)]
+        val = _get_key(L[1], P[1])
         push!(output, val)
         P[1] += 1
 
         @inbounds for i in 2:n
-            if L[i][P[i]] == val
+            if _get_key(L[i], P[i]) == val
                 P[i] += 1
             else
                 break
