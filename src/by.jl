@@ -8,9 +8,7 @@ Computes the intersection between first and second ordered lists using the Baeza
 The intersection is stored in `output`.
 """
 function baezayates(A, B, output=eltype(A)[], findpos=binarysearch)
-    #@show A B
     length(A) > 0 && length(B) > 0 && baezayates(A, 1, length(A), B, 1, length(B), output, findpos)
-    #@info output
     output
 end
 
@@ -20,10 +18,7 @@ function baezayates(A, a_sp, a_ep, B, b_sp, b_ep, output, findpos)
     imedian = ceil(Int, (a_ep + a_sp) / 2)
     median = _get_key(A, imedian)
     medpos = min(findpos(B, median, b_sp), b_ep) ## our findpos returns n + 1 when median is larger than B[end]
-    #!(a_sp <= imedian <= a_ep) && error("$(a_ep) <= $(imedian) <= $(a_sp)")
-    #!(b_sp <= medpos <= b_ep) && error("$(b_ep) <= $(medpos) <= $(b_sp)")
     matches = median === _get_key(B, medpos)
-    #@show (matches, median, imedian, medpos)
     #@show ("---", (a_sp, imedian-1), (b_sp, medpos-matches))
     #@show ("+++", (imedian+1, a_ep), (medpos+matches, b_ep))
     #a_ep != length(A) && exit(1)

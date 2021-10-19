@@ -61,7 +61,6 @@ function umerge(L, output=eltype(L[1])[])
         n = length(P)
         n == 0 && break
         n > 1 && _sort!(P, L)
-        # @info [L[i][P[i]] for i in eachindex(P)]
         val = _get_key(L[1], P[1])
         push!(output, val)
         P[1] += 1
