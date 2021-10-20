@@ -52,7 +52,9 @@ end
     umerge(L, output=eltype(L[1])[])
     umerge(onmatch::Function, L, t=1)
 
-Merges posting lists in `L` and saves the union in `output`; `onmatch`
+Merges posting lists in `L` and saves the union in `output`.
+If the method accepts `onmatch` function; this is a callback function
+that is called whenever an object occurs in at least `t` posting lists.
 """
 function umerge(L_, output=eltype(L_[1])[])
     umerge(L_, 1) do L, P, m
@@ -80,7 +82,7 @@ function umerge(onmatch::Function, L, t=1)
             end
         end
         
-        onmatch(L, P, m)
+        m >= t && onmatch(L, P, m)
         for i in 1:m
             P[i] += 1
         end
