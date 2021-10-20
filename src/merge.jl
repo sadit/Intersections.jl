@@ -50,29 +50,39 @@ end
 
 """
     umerge(L, output=eltype(L[1])[])
+    umerge(onmatch::Function, L, t=1)
 
-Merges posting lists in `L` and saves the union in `output`
+Merges posting lists in `L` and saves the union in `output`; `onmatch`
 """
-function umerge(L, output=eltype(L[1])[])
+function umerge(L_, output=eltype(L_[1])[])
+    umerge(L_, 1) do L, P, m
+        push!(output, _get_key(L[1], P[1]))
+    end
+    output
+end
+
+function umerge(onmatch::Function, L, t=1)
     sort!(L, by=first)
     P = ones(Int, length(L))
     while true
         _remove_empty!(P, L)
+        t > length(L) && break
         n = length(P)
         n == 0 && break
         n > 1 && _sort!(P, L)
         val = _get_key(L[1], P[1])
-        push!(output, val)
-        P[1] += 1
-
+        m = 1
         @inbounds for i in 2:n
             if _get_key(L[i], P[i]) == val
-                P[i] += 1
+                m += 1
             else
                 break
             end
         end
+        
+        onmatch(L, P, m)
+        for i in 1:m
+            P[i] += 1
+        end
     end
-
-    output
 end
