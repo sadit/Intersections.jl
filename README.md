@@ -1,3 +1,4 @@
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://sadit.github.io/Intersections.jl/dev)
 [![CI](https://github.com/sadit/Intersections.jl/actions/workflows/ci.yml/badge.svg)](https://github.com/sadit/Intersections.jl/actions/workflows/ci.yml)
 
 
