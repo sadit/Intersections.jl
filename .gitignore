@@ -3,7 +3,7 @@
 *.jl.mem
 *~
 .vscode*
-.git*
+.git/*
 .ipynb*
 emotions.csv
 Manifest.toml
