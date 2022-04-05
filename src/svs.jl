@@ -7,7 +7,6 @@ export svs
 Computes the intersection of the ordered lists in `postinglists` using a
 small vs small strategy. Accepts an intersection algorithm of two sets.
 """
-
 function svs(postinglists, intersect2=baezayates)
     sort!(postinglists, by=length, rev=true)
     curr = intersect2(pop!(postinglists), pop!(postinglists))

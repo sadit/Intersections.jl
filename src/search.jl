@@ -57,6 +57,11 @@ function doublingsearchrev(A, x, sp=1, ep=length(A))
 	binarysearch(A, x, max(p, sp), ep)
 end
 
+"""
+	seqsearchrev(A, x, sp=1, ep=length(A))
+
+Reverse sequential search, i.e., it starts from `ep` to `sp`
+"""
 function seqsearchrev(A, x, sp=1, ep=length(A))
 	pos = ep + 1
 	while pos > sp && x <= _get_key(A, pos-1)
@@ -66,6 +71,11 @@ function seqsearchrev(A, x, sp=1, ep=length(A))
 	pos
 end
 
+"""
+	searchrev(A, x, sp=1, ep=length(A))
+
+Sequential search, i.e., it starts from `sp` to `ep`
+"""
 function seqsearch(A, x, sp=1, ep=length(A))
 	x > _get_key(A, ep) && return ep + 1
 	while sp <= ep && _get_key(A, sp) < x

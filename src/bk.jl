@@ -1,11 +1,10 @@
 # This file is part of Intersections.jl
+
 export bk
 
 """
     bk(onmatch::Function, L, findpos::Function=doublingsearch)
     bk(L, output=eltype(L[1])[], findpos::Function=doublingsearch)
-
-
 
 Computes intersection of posting lists in `L` using `findpos` storing the intersection in `output`.
 

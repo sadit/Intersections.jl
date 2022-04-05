@@ -1,7 +1,11 @@
 # This file is part of Intersections.jl
 export imerge2
 
-# intersection merge
+"""
+    imerge2(A, B, output=eltype(A)[])
+
+Computes the intersection of `A` and `B` (sorted arrays), using a merge-like algorithm, and stores it in `output`.
+"""
 function imerge2(A, B, output=eltype(A)[])
     i = j = 1
     n, m = length(A), length(B)

@@ -47,25 +47,30 @@ function _sort!(P::Vector{IType}, L) where {IType<:Integer}
     end
 end
 
-
 """
     umerge(L, output=eltype(L[1])[])
     umerge(onmatch::Function, L, t=1)
 
 Merges posting lists in `L` and saves the union in `output`.
-If the method accepts `onmatch` function; this is a callback function
-that is called whenever an object occurs in at least `t` posting lists.
+The method accepts a callback function `onmatch` that is called whenever an object occurs in at least `t` posting lists.
+The callback signature is `onmatch(L, P, m)` where:
+
+- `L` is an array of postings lists, the same of the input but maybe sorted and perhaps some lists could be removed by the process
+- `P` a list of indices of the current position of `L`, e.g., `L[i][P[i]]` to obtain the current position of i-th list.
+- `m` the number of occurences of the current element pointed by `P`. Note that all `L[i][P[i]]` are the same for `1 ≤ i ≤ m` (it is an alignment position).
 """
 function umerge(L_, output=eltype(L_[1])[])
     umerge(L_, 1) do L, P, m
         push!(output, _get_key(L[1], P[1]))
     end
+
     output
 end
 
 function umerge(onmatch::Function, L, t=1)
     sort!(L, by=first)
     P = ones(Int, length(L))
+    
     while true
         _remove_empty!(P, L)
         t > length(L) && break
