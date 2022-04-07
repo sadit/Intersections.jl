@@ -48,28 +48,39 @@ function _sort!(P::Vector{IType}, L) where {IType<:Integer}
 end
 
 """
-    umerge(L, output=eltype(L[1])[])
-    umerge(onmatch::Function, L, t=1)
+    umerge(L, output=eltype(L[1])[], P=nothing; t=1)
+    umerge(onmatch::Function, L, P=nothing; t::Int=1)
 
 Merges posting lists in `L` and saves the union in `output`.
 The method accepts a callback function `onmatch` that is called whenever an object occurs in at least `t` posting lists.
+
+# Arguments:
+- `L`: The array of posting lists, the array can be destroyed in the process.
+- `P`: The array of current positions in posting lists, i.e., initial state as an array of ones of size ``|L|``.
+
+# Keyword arguments
+- `t`: A positive treshold (number of occurrences) to push or apply the callback function, i.e., ``t=1`` means for union.
+
+# About the callback function
+
 The callback signature is `onmatch(L, P, m)` where:
 
-- `L` is an array of postings lists, the same of the input but maybe sorted and perhaps some lists could be removed by the process
+- `L` is an array of postings lists, the same of the input but maybe sorted and perhaps some lists could be removed by the process.
 - `P` a list of indices of the current position of `L`, e.g., `L[i][P[i]]` to obtain the current position of i-th list.
 - `m` the number of occurences of the current element pointed by `P`. Note that all `L[i][P[i]]` are the same for `1 ≤ i ≤ m` (it is an alignment position).
-"""
-function umerge(L_, output=eltype(L_[1])[])
-    umerge(L_, 1) do L, P, m
-        push!(output, _get_key(L[1], P[1]))
-    end
 
+"""
+function umerge(L_, output=eltype(L_[1])[], P=nothing; t::Int=1)
+    umerge(L_, P; t) do L, P, m
+        @inbounds m >= t && push!(output, _get_key(L[1], P[1]))
+    end
+ 
     output
 end
 
-function umerge(onmatch::Function, L, t=1)
-    sort!(L, by=first)
-    P = ones(Int, length(L))
+function umerge(onmatch::Function, L, P=nothing; t::Int=1)
+    P = P === nothing ? ones(Int32, length(L)) : P
+    _sort!(P, L)  # sort!(L, by=first)
     
     while true
         _remove_empty!(P, L)
