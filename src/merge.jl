@@ -81,8 +81,9 @@ end
 function umerge(onmatch::Function, L, P=nothing; t::Int=1)
     P = P === nothing ? ones(Int32, length(L)) : P
     _sort!(P, L)  # sort!(L, by=first)
-    
-    while true
+    usize = 0
+
+    @inbounds while true
         _remove_empty!(P, L)
         t > length(L) && break
         n = length(P)
@@ -98,9 +99,15 @@ function umerge(onmatch::Function, L, P=nothing; t::Int=1)
             end
         end
         
-        m >= t && onmatch(L, P, m)
+        if m >= t
+            onmatch(L, P, m)
+            usize += 1
+        end
+
         for i in 1:m
             P[i] += 1
         end
     end
+
+    usize
 end
