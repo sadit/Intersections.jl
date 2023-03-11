@@ -49,7 +49,11 @@ end
 
 
 @testset "BK" begin
-    @test [1, 3, 5] == bk([[1, 2, 3, 4, 5], [1, 3, 5]])
+    LIST = [[1, 2, 3, 4, 5, 6], [1, 3, 5]]
+    @test [1, 3, 5] == bk(copy(LIST))
+    @test_call bk!(Int[], copy(LIST), binarysearch)
+    @test_call bk!(Int[], copy(LIST), doublingsearch)
+    @test_call bk!(Int[], copy(LIST), doublingsearchrev)
 
     for salgo in [binarysearch, doublingsearch, doublingsearchrev]
         n = 300
@@ -57,13 +61,11 @@ end
             L = [sort!(unique(rand(1:n, i))) for j in 1:3]
             I = sort(intersect(L...))
             Lc = copy(L)
-            S = bk(Lc, Int[], salgo)
-            i == 1 && @test_call bk(Lc, Int[], salgo)
+            S = bk!(Int[], Lc, salgo)
             @test I == S
         end
     end
 end
-
 
 
 @testset "Merge/Union" begin

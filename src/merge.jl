@@ -48,11 +48,12 @@ function _sort!(P::Vector, L)
 end
 
 """
-    umerge(L, output=eltype(L[1])[], P=nothing; t=1)
-    umerge(onmatch::Function, L, P=nothing; t::Int=1)
+     umerge!(output, L_, P_=ones(Int32, length(L_)); t::Int=1)
+     umerge(L, P=ones(Int32, length(L)); t::Int=1)
+     umergefun(onmatch::Function, L, P = ones(Int32, length(L)); t::Int=1)
 
 Merges posting lists in `L` and saves the union in `output`.
-The method accepts a callback function `onmatch` that is called whenever an object occurs in at least `t` posting lists.
+If the method accepts a callback function `onmatch` that is called whenever an object occurs in at least `t` posting lists.
 
 # Arguments:
 - `L`: The array of posting lists, the array can be destroyed in the process.

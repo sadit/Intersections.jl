@@ -1,10 +1,11 @@
 # This file is part of Intersections.jl
 
-export bk
+export bk, bk!, bfun
 
 """
-    bk(onmatch::Function, L, findpos::Function=doublingsearch)
-    bk(L, output=eltype(L[1])[], findpos::Function=doublingsearch)
+    bkfun(onmatch::Function, L, findpos::Function=doublingsearch)
+    bk!(output, L, findpos::Function=doublingsearch)
+    bk(L, findpos::Function=doublingsearch)
 
 Computes intersection of posting lists in `L` using `findpos` storing the intersection in `output`.
 
@@ -12,11 +13,12 @@ The method accepting `onmatch` calls `onmatch(L, P)` where `L` are the input lis
 indices where each match occurred in `L[i]`.
 
 """
-function bk(onmatch::Function, L, findpos::Function=doublingsearch)
+function bkfun(onmatch::Function, L, findpos::Function=doublingsearch)
     P = ones(Int, length(L))
     n = length(L)
     _max = _get_key(L[1], 1)
     c = 0
+    isize = 0  # numbr of onmatch calls
 
     while true
         @inbounds for i in eachindex(P)
@@ -27,6 +29,7 @@ function bk(onmatch::Function, L, findpos::Function=doublingsearch)
                 c += 1
                 if c == n
                     onmatch(L, P)
+                    isize += 1
                     c = 0
                     P[i] += 1
                     P[i] > length(L[i]) && return
@@ -38,12 +41,19 @@ function bk(onmatch::Function, L, findpos::Function=doublingsearch)
             end
         end
     end
+
+    isize
 end
 
-function bk(L, output=eltype(L[1])[], findpos::Function=doublingsearch)
-    bk(L, findpos) do L_, P
+function bk!(output, L, findpos::Function=doublingsearch)
+    bkfun(L, findpos) do L_, P
         push!(output, _get_key(L_[1], P[1]))
     end
 
     output
+end
+
+function bk(L, findpos::Function=doublingsearch)
+    output = Int64[] 
+    bk!(output, L, findpos)
 end
