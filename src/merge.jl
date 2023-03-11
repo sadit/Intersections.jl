@@ -1,5 +1,5 @@
 # This file is part of Intersections.jl
-export umerge
+export umerge!, umergefun, umerge
 
 """
     _remove_empty!(P, L)
@@ -31,7 +31,7 @@ end
 
 Adaptive bubble sort, efficient than other approaches because we expect a few sets and almost sorted
 """
-function _sort!(P::Vector{IType}, L) where {IType<:Integer}
+function _sort!(P::Vector, L)
     s = 1
     n = length(P)
     
@@ -70,16 +70,20 @@ The callback signature is `onmatch(L, P, m)` where:
 - `m` the number of occurences of the current element pointed by `P`. Note that all `L[i][P[i]]` are the same for `1 ≤ i ≤ m` (it is an alignment position).
 
 """
-function umerge(L_, output=eltype(L_[1])[], P=nothing; t::Int=1)
-    umerge(L_, P; t) do L, P, m
-        @inbounds m >= t && push!(output, _get_key(L[1], P[1]))
+function umerge!(output, L_, P_=ones(Int32, length(L_)); t::Int=1)
+    umergefun(L_, P_; t) do L, P, m
+        @inbounds push!(output, _get_key(L[1], P[1]))
     end
  
     output
 end
 
-function umerge(onmatch::Function, L, P=nothing; t::Int=1)
-    P = P === nothing ? ones(Int32, length(L)) : P
+function umerge(L, P=ones(Int32, length(L)); t::Int=1)
+    output = Int64[]
+    umerge!(output, L, P; t)
+end
+
+function umergefun(onmatch::Function, L, P = ones(Int32, length(L)); t::Int=1)
     _sort!(P, L)  # sort!(L, by=first)
     usize = 0
 
