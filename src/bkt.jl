@@ -14,25 +14,12 @@ The method accepting `onmatch` calls `onmatch(L, P)` where `L` are the input lis
 indices where each match occurred in `L[i]`.
 
 """
-function bktfun(onmatch::Function, L, findpos::Function=doublingsearch; t::Int=length(L))
+function bktfun(onmatch::Function, L::AbstractVector, findpos::Function=doublingsearch; t::Int=length(L))
     P = ones(Int, length(L))
     bktfun(onmatch, L, P, findpos; t)
 end
 
-function show_list_state(L, P, nick)
-    println(stderr, "====== $nick ===")
-    println(stderr, "L: $L")
-    println(stderr, "P: $P")
-    for i in eachindex(L)
-        if P[i] > length(L[i])
-            println(stderr, "@ $i> beyond list frontier P[i] = $(P[i]), |L[i]| = $(length(L[i]))")
-        else
-            println(stderr, "@ $i> L[] = $(L[i][P[i]]) -- P[] = $(P[i])")
-        end
-    end
-end
-
-function bktfun(onmatch::Function, L, P, findpos::Function; t::Int=length(L))
+function bktfun(onmatch::Function, L::AbstractVector, P::AbstractVector, findpos::Function=doublingsearch; t::Int=length(L))
     usize = 0  # number of onmatch calls
 
     @inbounds while length(L) > 0
@@ -71,7 +58,7 @@ function bktfun(onmatch::Function, L, P, findpos::Function; t::Int=length(L))
     usize
 end
 
-function bkt!(output, L, findpos::Function=doublingsearch; t::Int=length(L))
+function bkt!(output::AbstractVector, L::AbstractVector, findpos::Function=doublingsearch; t::Int=length(L))
     bktfun(L, findpos; t) do L_, P, m
         push!(output, _get_key(L_[1], P[1]))
     end
@@ -79,7 +66,7 @@ function bkt!(output, L, findpos::Function=doublingsearch; t::Int=length(L))
     output
 end
 
-function bkt(L, findpos::Function=doublingsearch; t::Int=length(L))
+function bkt(L::AbstractVector, findpos::Function=doublingsearch; t::Int=length(L))
     output = Int64[] 
     bkt!(output, L, findpos; t)
 end

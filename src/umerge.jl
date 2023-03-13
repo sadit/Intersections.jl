@@ -1,5 +1,18 @@
 # This file is part of Intersections.jl
-export umerge!, umergefun, umerge, mergefun
+export umerge!, umergefun, umerge
+
+function show_list_state(L, P, nick)
+    println(stderr, "====== $nick ===")
+    println(stderr, "L: $L")
+    println(stderr, "P: $P")
+    for i in eachindex(L)
+        if P[i] > length(L[i])
+            println(stderr, "@ $i> beyond list frontier P[i] = $(P[i]), |L[i]| = $(length(L[i]))")
+        else
+            println(stderr, "@ $i> L[] = $(L[i][P[i]]) -- P[] = $(P[i])")
+        end
+    end
+end
 
 """
     _remove_empty!(L, P)
@@ -125,21 +138,3 @@ function umergefun(onmatch::Function, L, P = ones(Int32, length(L)); t::Int=1)
 end
 
 
-"""
-    mergefun(onmatch::Function, L, P; t::Int=1)
-
-Simple wrapper around other specific operations depending on `t` value
-"""
-function mergefun(onmatch::Function, L, P; t::Int=1)
-    n = length(L)
-    t = convert(Int, t == 0 ? n : (t < 0 ? n - t : t))
-    t = min(t, n)
-
-    if t == n  # intersection
-        bkfun(onmatch, L, P)
-    elseif t <= 2
-        umergefun(onmatch, L, P; t)
-    else
-        bktfun(onmatch, L, P; t)
-    end
-end

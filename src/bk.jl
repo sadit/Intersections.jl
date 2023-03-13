@@ -19,7 +19,7 @@ function bkfun(onmatch::Function, L, findpos::Function=doublingsearch)
     bkfun(onmatch, L, P, findpos)
 end
 
-function bkfun(onmatch::Function, L, P, findpos::Function)
+function bkfun(onmatch::Function, L, P, findpos::Function=doublingsearch)
     n = length(L)
     _max = _get_key(L[1], 1)
     c = 0

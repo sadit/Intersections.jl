@@ -11,10 +11,10 @@ end
 
 include("search.jl")
 include("by.jl")
-include("merge.jl")
+include("umerge.jl")
 include("imerge.jl")
 include("svs.jl")
 include("bk.jl")
 include("bkt.jl")
-
+include("xmerge.jl")
 end

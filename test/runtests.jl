@@ -104,7 +104,9 @@ end
     for i in n:n
         L = randset(n, 5)
         for t in 1:length(L)
-            @test umerge!(Int[], copy(L); t) == bkt!(Int[], copy(L); t)
+            G = umerge!(Int[], copy(L); t) 
+            @test G == bkt!(Int[], copy(L); t)
+            @test G == xmerge!(Int[], copy(L); t)
         end
     end
 end
