@@ -136,7 +136,7 @@ function mergefun(onmatch::Function, L, P; t::Int=1)
     t = min(t, n)
 
     if t == n  # intersection
-        bkfun(onmatch, L, P; t=n)
+        bkfun(onmatch, L, P)
     elseif t <= 2
         umergefun(onmatch, L, P; t)
     else
