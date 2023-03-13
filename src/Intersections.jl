@@ -15,4 +15,6 @@ include("merge.jl")
 include("imerge.jl")
 include("svs.jl")
 include("bk.jl")
+include("bkt.jl")
+
 end

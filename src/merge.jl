@@ -1,12 +1,12 @@
 # This file is part of Intersections.jl
-export umerge!, umergefun, umerge
+export umerge!, umergefun, umerge, mergefun
 
 """
-    _remove_empty!(P, L)
+    _remove_empty!(L, P)
 
 Inplace removal of empty lists
 """
-function _remove_empty!(P, L)
+function _remove_empty!(L, P)
     j = 1
     n = length(P)
     @inbounds for i in 1:n
@@ -27,11 +27,11 @@ function _remove_empty!(P, L)
 end
 
 """
-    _sort!(P, L)
+    _sort!(L, P)
 
 Adaptive bubble sort, efficient than other approaches because we expect a few sets and almost sorted
 """
-function _sort!(P::Vector, L)
+function _sort!(L, P::Vector)
     s = 1
     n = length(P)
     
@@ -60,7 +60,7 @@ If the method accepts a callback function `onmatch` that is called whenever an o
 - `P`: The array of current positions in posting lists, i.e., initial state as an array of ones of size ``|L|``.
 
 # Keyword arguments
-- `t`: A positive treshold (number of occurrences) to push or apply the callback function, i.e., ``t=1`` means for union.
+- `t`: Computes t-thresholds, i.e., t from 1 (union) to |L| (intersection) of posting lists in `L` using `findpos` storing the result set in `output`.
 
 # About the callback function
 
@@ -85,34 +85,61 @@ function umerge(L, P=ones(Int32, length(L)); t::Int=1)
 end
 
 function umergefun(onmatch::Function, L, P = ones(Int32, length(L)); t::Int=1)
-    _sort!(P, L)  # sort!(L, by=first)
+    _sort!(L, P)  # sort!(L, by=first)
     usize = 0
 
     @inbounds while true
-        _remove_empty!(P, L)
-        t > length(L) && break
-        n = length(P)
-        n == 0 && break
-        n > 1 && _sort!(P, L)
-        val = _get_key(L[1], P[1])
-        m = 1
-        @inbounds for i in 2:n
-            if _get_key(L[i], P[i]) == val
-                m += 1
-            else
-                break
+        _remove_empty!(L, P)
+        n = length(L)
+        (n == 0 || t > n) && break
+        _sort!(L, P)
+        s = _get_key(L[1], P[1])
+
+        if t > 1
+            e = _get_key(L[t], P[t])
+
+            if s != e
+                for i in 1:t-1
+                    P[i] += 1
+                end
+
+                continue
             end
         end
-        
-        if m >= t
-            onmatch(L, P, m)
-            usize += 1
-        end
 
-        for i in 1:m
+        m = t
+        while m < n 
+            s == _get_key(L[m+1], P[m+1]) || break
+            m += 1
+        end
+ 
+        onmatch(L, P, m)
+        for i in 1:m 
             P[i] += 1
         end
+
+        usize += 1
     end
 
     usize
+end
+
+
+"""
+    mergefun(onmatch::Function, L, P; t::Int=1)
+
+Simple wrapper around other specific operations depending on `t` value
+"""
+function mergefun(onmatch::Function, L, P; t::Int=1)
+    n = length(L)
+    t = convert(Int, t == 0 ? n : (t < 0 ? n - t : t))
+    t = min(t, n)
+
+    if t == n  # intersection
+        bkfun(onmatch, L, P; t=n)
+    elseif t <= 2
+        umergefun(onmatch, L, P; t)
+    else
+        bktfun(onmatch, L, P; t)
+    end
 end
