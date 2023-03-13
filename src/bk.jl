@@ -25,10 +25,10 @@ function bkfun(onmatch::Function, L, P, findpos::Function=doublingsearch)
     c = 0
     isize = 0  # number of onmatch calls
 
-    while true
-        @inbounds for i in eachindex(P)
+    @inbounds while true
+        for i in eachindex(P)
             P[i] = findpos(L[i], _max, P[i])
-            P[i] > length(L[i]) && return
+            P[i] > length(L[i]) && return isize
             pval = _get_key(L[i], P[i])
             if pval == _max
                 c += 1
@@ -37,7 +37,7 @@ function bkfun(onmatch::Function, L, P, findpos::Function=doublingsearch)
                     isize += 1
                     c = 0
                     P[i] += 1
-                    P[i] > length(L[i]) && return
+                    P[i] > length(L[i]) && return isize
                     _max = _get_key(L[i], P[i])
                 end
             else
