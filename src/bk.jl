@@ -1,27 +1,23 @@
 # This file is part of Intersections.jl
 
-export bk, bk!, bkfun
+export bk!
 
 """
-    bkfun(onmatch::Function, L, findpos::Function=doublingsearch)
-    bkfun(onmatch::Function, L, P, findpos::Function)
-    bk!(output, L, findpos::Function=doublingsearch)
-    bk(L, findpos::Function=doublingsearch)
+    bk!(output, L, P, findpos::Function=doublingsearch) -> int. size
 
-Intersection
+Computes the intersection of a list of posting lists using the Barbay and Kenyon algorithm.
 
-The method accepting `onmatch` calls `onmatch(L, P)` where `L` are the input lists (in some functions this could be a permutation of the input), and `P` and array of
-indices where each match occurred in `L[i]`.
+See [`umerge`](@ref) if you need to change how matches are captured (`onmatch!` function).
 
 """
-function bkfun(onmatch::Function, L, findpos::Function=doublingsearch)
+function bk!(output, L::AbstractVector, findpos::Function=doublingsearch)
     P = ones(Int, length(L))
-    bkfun(onmatch, L, P, findpos)
+    bk!(output, L, P, findpos)
 end
-
-function bkfun(onmatch::Function, L, P, findpos::Function=doublingsearch)
+ 
+function bk!(output, L, P, findpos::Function=doublingsearch)
     n = length(L)
-    _max = _get_key(L[1], 1)
+    _max = getkey(L[1], 1)
     c = 0
     isize = 0  # number of onmatch calls
 
@@ -29,16 +25,16 @@ function bkfun(onmatch::Function, L, P, findpos::Function=doublingsearch)
         for i in eachindex(P)
             P[i] = findpos(L[i], _max, P[i])
             P[i] > length(L[i]) && return isize
-            pval = _get_key(L[i], P[i])
+            pval = getkey(L[i], P[i])
             if pval == _max
                 c += 1
                 if c == n
-                    onmatch(L, P, c)
+                    onmatch!(output, L, P, c)
                     isize += 1
                     c = 0
                     P[i] += 1
                     P[i] > length(L[i]) && return isize
-                    _max = _get_key(L[i], P[i])
+                    _max = getkey(L[i], P[i])
                 end
             else
                 c = 0
@@ -50,15 +46,3 @@ function bkfun(onmatch::Function, L, P, findpos::Function=doublingsearch)
     isize
 end
 
-function bk!(output, L, findpos::Function=doublingsearch)
-    bkfun(L, findpos) do L_, P, m
-        push!(output, _get_key(L_[1], P[1]))
-    end
-
-    output
-end
-
-function bk(L, findpos::Function=doublingsearch)
-    output = Int64[] 
-    bk!(output, L, findpos)
-end

@@ -49,23 +49,32 @@ randset(n, m) = [sort!(unique(rand(1:n, 100))) for j in 1:m]
     end
 end
 
+function doL(mergefun, L, salgo=doublingsearch)
+    output = Int[]
+    mergefun(output, copy(L), salgo)
+    output
+end
+
+function doT(mergefun, L, t)
+    output = Int[]
+    mergefun(output, copy(L); t)
+    output
+end
 
 @testset "BK" begin
     LIST = [[1, 2, 3, 4, 5, 6], [1, 3, 5]]
-    @test [1, 3, 5] == bk(copy(LIST))
-    @test [1, 3, 5] == bkt(copy(LIST))
-    @test_call bk!(Int[], copy(LIST), binarysearch)
-    @test_call bk!(Int[], copy(LIST), doublingsearch)
-    @test_call bk!(Int[], copy(LIST), doublingsearchrev)
-    @test_call bkt!(Int[], copy(LIST))
+    @test [1, 3, 5] == doL(bk!, LIST)
+    @test [1, 3, 5] == doL(bkt!, LIST)
+    @test_call doL(bk!, LIST, binarysearch)
+    @test_call doL(bk!, LIST, doublingsearch)
+    @test_call doL(bk!, LIST, doublingsearchrev)
 
     for salgo in [binarysearch, doublingsearch, doublingsearchrev]
         n = 300
         for i in 1:n
             L = randset(n, 3)
             I = sort(intersect(L...))
-            Lc = copy(L)
-            S = bk!(Int[], Lc, salgo)
+            S = doL(bk!, L, salgo)
             @test I == S
         end
     end
@@ -73,8 +82,8 @@ end
 
 
 @testset "Merge/Union" begin
-    @test [1, 2, 3, 4, 5, 6, 7] == umerge([[1, 2, 3, 4, 5, 6], [1, 3, 5, 7]])
-    @test [1, 2, 3, 4, 5, 6, 7] == bkt([[1, 2, 3, 4, 5, 6], [1, 3, 5, 7]]; t=1)
+    @test [1, 2, 3, 4, 5, 6, 7] == doT(umerge!, [[1, 2, 3, 4, 5, 6], [1, 3, 5, 7]], 1)
+    @test [1, 2, 3, 4, 5, 6, 7] == doT(bkt!, [[1, 2, 3, 4, 5, 6], [1, 3, 5, 7]], 1)
     n = 300
     for i in 1:n
         L = randset(n, 5)
@@ -82,31 +91,31 @@ end
         #@info (i, I, bk, salgo)
         i == 1 && @test_call umerge!(Int[], L)
         i == 1 && @test_call bkt!(Int[], L)
-        S = umerge!(Int[], copy(L))
+        S = doT(umerge!, L, 1)
         @test I == S
-        S = bkt!(Int[], L; t=1)
+        S = doT(bkt!, L, 1)
         @test I == S
     end
 end
 
 @testset "threshold" begin
-    @test [1, 2, 3, 4, 5, 6, 7] == umerge([[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]]; t=1)
-    @test [1, 3, 6] == umerge([[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]]; t=2)
-    @test [1] == umerge([[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]]; t=3)
-    @test_call umerge([[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]]; t=3)
+    @test [1, 2, 3, 4, 5, 6, 7] == doT(umerge!, [[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]], 1)
+    @test [1, 3, 6] == doT(umerge!, [[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]], 2)
+    @test [1] == doT(umerge!, [[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]], 3)
+    @test_call doT(umerge!, [[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]], 3)
     
-    @test [1, 2, 3, 4, 5, 6, 7] == bkt([[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]], binarysearch; t=1)
-    @test [1, 3, 6] == bkt([[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]]; t=2)
-    @test [1] == bkt([[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]]; t=3)
-    @test_call bkt([[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]]; t=3)
+    @test [1, 2, 3, 4, 5, 6, 7] == doT(bkt!, [[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]], 1)
+    @test [1, 3, 6] == doT(bkt!, [[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]], 2)
+    @test [1] == doT(bkt!, [[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]], 3)
+    @test_call doT(bkt!, [[1, 2, 3, 4, 5, 6], [1, 3, 7], [1, 6]], 3)
     
     n = 3
     for i in n:n
         L = randset(n, 5)
         for t in 1:length(L)
-            G = umerge!(Int[], copy(L); t) 
-            @test G == bkt!(Int[], copy(L); t)
-            @test G == xmerge!(Int[], copy(L); t)
+            G = doT(umerge!, L, t) 
+            @test G == doT(bkt!, L, t)
+            @test G == doT(xmerge!, L, t)
         end
     end
 end
