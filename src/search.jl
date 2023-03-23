@@ -7,7 +7,7 @@ export binarysearch, doublingsearch, doublingsearchrev, seqsearch, seqsearchrev
 
 Finds the insertion position of `x` in `A` in the range `sp:ep`
 """
-function binarysearch(A, x, sp = 1, ep = length(A))
+function binarysearch(A, x, sp = 1, ep = length(A))::Int
     while sp < ep
         mid = div(sp + ep, 2)
         if x <= getkey(A, mid)
@@ -25,7 +25,7 @@ end
 
 Finds the insertion position of `x` in `A`, starting at `sp`
 """
-function doublingsearch(A, x, sp = 1, ep = length(A))
+function doublingsearch(A, x, sp = 1, ep = length(A))::Int
     p = 0
     i = 1
 
@@ -43,7 +43,7 @@ end
 
 Finds the insertion position of `x` in `A`, starting at the end
 """
-function doublingsearchrev(A, x, sp = 1, ep = length(A))
+function doublingsearchrev(A, x, sp = 1, ep = length(A))::Int
     x > getkey(A, ep) && return ep + 1
 
     i = 1
@@ -62,7 +62,7 @@ end
 
 Reverse sequential search, i.e., it starts from `ep` to `sp`
 """
-function seqsearchrev(A, x, sp = 1, ep = length(A))
+function seqsearchrev(A, x, sp = 1, ep = length(A))::Int
     pos = ep + 1
     while pos > sp && x <= getkey(A, pos - 1)
         pos -= 1
@@ -76,7 +76,7 @@ end
 
 Sequential search, i.e., it starts from `sp` to `ep`
 """
-function seqsearch(A, x, sp = 1, ep = length(A))
+function seqsearch(A, x, sp = 1, ep = length(A))::Int
     x > getkey(A, ep) && return ep + 1
     while sp <= ep && getkey(A, sp) < x
         sp += 1
@@ -84,3 +84,4 @@ function seqsearch(A, x, sp = 1, ep = length(A))
 
     sp > ep ? ep : sp
 end
+
